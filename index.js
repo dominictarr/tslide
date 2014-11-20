@@ -10,6 +10,11 @@ var iq = require('insert-queue')
 var js = require('hipster/highlight/javascript')
 
 var file = opts._[0]
+if (!file) {
+  console.error('usage: tslide <slides-file>')
+  process.exit(2)
+}
+
 var text = require('fs').readFileSync(file, 'utf-8')
 var slides = text.split(/---+\n/)
 if(slides.length <= 1) {
