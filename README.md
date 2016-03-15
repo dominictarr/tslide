@@ -33,6 +33,8 @@ function didItWork() {
 
 ```
 
+on by default, disable via `--no-highlight`
+
 ---
 
 ## Why?
