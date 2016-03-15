@@ -1,7 +1,8 @@
 # tslide
 
-Terminal SlideDeck.
-  (for back end devs)
+> Terminal SlideDeck (for back end devs)
+
+![Screenshot](screenshot.png)
 
 ---
 
@@ -34,6 +35,17 @@ function didItWork() {
 ```
 
 on by default, disable via `--no-highlight`
+
+---
+
+# images
+
+[iTerm 2](https://www.iterm2.com) users can 
+take advantage of [its inline image feature](https://www.iterm2.com/images.html) and use 
+images in your slides.
+
+This feature is enabled by default. To disable it, just launch 
+the program with `--no-images`.
 
 ---
 
