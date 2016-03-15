@@ -82,11 +82,13 @@ function indent(slide, indent) {
     if(/^```/.test(l))
       code = !code
     if(code && highlight) {
-      var q = iq(l)
+      var q = iq('\t' + l)
       js.highlight(q)
       l = q.apply()
     }
+    if(highlight) {
+      l = l.replace(/```(.*)?$/gm, '')
+    }
     return space + l
-  }).join('\n').replace(/```(.*)?$/gm, '')
+  }).join('\n')
 }
-
