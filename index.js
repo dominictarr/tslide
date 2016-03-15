@@ -6,6 +6,7 @@ var charm = require('charm')(process.stdout)
 var keypress = require('keypress')(process.stdin)
 var opts = require('optimist').default('images', true).argv
 var fs = require('fs')
+var path = require('path')
 var iq = require('insert-queue')
 var js = require('hipster/highlight/javascript')
 var imgcat = require('ansi-escapes').image
@@ -35,7 +36,9 @@ function images (content) {
 
   while (match = pattern.exec(content)) {
     try {
-      image = imgcat(fs.readFileSync(match[1]))
+      var url = path.join(__dirname, match[1])
+
+      image = imgcat(fs.readFileSync(url))
       content = content.replace(match[0], image)
     } catch (error) {
       // Either file doesn't exist
