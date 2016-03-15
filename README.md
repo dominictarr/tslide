@@ -29,9 +29,11 @@ each slide is a section of a markdown document.
 
 ## Code
 
+‘‘‘js
 function fibonacci (n) {
   return n < 2 ? n : fibonacci(n - 1) + fibonacci(n - 2)
 }
+‘‘‘
 
 ---
 ```
