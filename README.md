@@ -2,8 +2,6 @@
 
 > Terminal SlideDeck (for back end devs)
 
-![Screenshot](screenshot.png)
-
 ---
 
 Controls: 
@@ -26,15 +24,21 @@ each slide is a section of a markdown document.
 
 ## crude js syntax highlighting
 
-``` js
-function didItWork() {
+```md
+# tslide
 
-  //wahey!
+## Code
+
+function fibonacci (n) {
+  return n < 2 ? n : fibonacci(n - 1) + fibonacci(n - 2)
 }
 
+---
 ```
 
-on by default, disable via `--no-highlight`
+![Demo Code](demo-code.png)
+
+This feature is on by default. Disable via `--no-highlight`.
 
 ---
 
@@ -44,8 +48,21 @@ on by default, disable via `--no-highlight`
 take advantage of [its inline image feature](https://www.iterm2.com/images.html) and use 
 images in your slides.
 
-This feature is enabled by default. To disable it, just launch 
-the program with `--no-images`.
+```md
+# tslide
+
+## Images
+
+![pizza](pizza.png)
+
+There's nothing a pizza can't fix.
+
+---
+```
+
+![Demo Images](demo-images.png)
+
+This feature is on by default. Disable via `--no-images`.
 
 ---
 
