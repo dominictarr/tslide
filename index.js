@@ -1,8 +1,7 @@
 #! /usr/bin/env node
-
 require('colors')
 
-var charm = require('charm')(process.stdout)
+var charmer = require('charm')
 var keypress = require('keypress')(process.stdin)
 var opts = require('optimist').default('images', true).argv
 var fs = require('fs')
@@ -10,14 +9,47 @@ var path = require('path')
 var iq = require('insert-queue')
 var js = require('hipster/highlight/javascript')
 var imgcat = require('ansi-escapes').image
+var http = require('http')
+
+var speaker = opts.speaker || opts.s
+var present = opts.present || opts.p
+if (speaker && present) {
+  console.error('Cannot run tslide as both speaker and presenter.')
+  process.exit(1)
+}
 
 var file = opts._[0]
+if (!file && !present) {
+  console.error('USAGE: tslide [markdown-file] [-s|--speaker] [-p|--present]')
+  console.error()
+  console.error('Pass --speaker to interpret blockquotes as speaker notes. This')
+  console.error('will show the full presentation slides in the current terminal.')
+  console.error()
+  console.error('Run tslide in another terminal with --present. This terminal will')
+  console.error('see the same presentation, but without the speaker notes.')
+  process.exit(1)
+}
+
+var port = 8009
+
+// Connect to the speaker server and stream the response.
+if (present) {
+  http.request({ port: port }, function (res) {
+    res.pipe(process.stdout)
+  }).end()
+  return
+}
+
+var charm = charmer(process.stdout)
+
 var text = require('fs').readFileSync(file, 'utf-8')
 var slides = text.split(/---+\n/)
 if(slides.length <= 1) {
   console.error('markdown should be split into slides by --- (hdiv)')
   process.exit(1)
 }
+var notes = []
+var presenters = []  // presenter http connections
 
 var highlight = opts.highlight !== false
 
@@ -49,6 +81,40 @@ function images (content) {
   return content;
 }
 
+// Removes all blockquotes from 'slides' and populates 'notes' with them.
+function extractNotes () {
+  slides = slides.map(function (slide) {
+    var res = slide.match(/\s+>.*/)
+    if (!res || !res.index) {
+      notes.push('')
+      return slide
+    }
+    var idx = res.index
+    notes.push(slide.substring(idx))
+    return slide.substring(0, idx)
+  })
+}
+
+// Runs an HTTP server that will serve streaming presentation notes in the
+// response.
+function serveNotes () {
+  http.createServer(function (req, res) {
+    var charm = charmer(res)
+    presenters.push(charm)
+  }).listen(port)
+}
+
+// Writes a string to all live HTTP connections.
+function writeSlide (slide) {
+  presenters.forEach(function (pres) {
+    pres
+      .reset()
+      .position(1, mtop)
+      .write(indent(slide, mleft))
+      .position(mleft, process.stdout.rows - 1)
+  })
+}
+
 function show () {
   if(index < 0) index = 0
   if(index >= slides.length) index = slides.length - 1
@@ -63,9 +129,20 @@ function show () {
   charm
     .reset()
     .position(1, mtop)
-    .write(indent(content, mleft))
+    .write(content, mleft))
+    .write(indent(notes[index], mleft))
     .position(mleft, process.stdout.rows - 1)
+
+  writeSlide(slides[index])
 }
+
+// Extract notes and run presentation server, if we're the speaker.
+if (speaker) {
+  extractNotes()
+  serveNotes(port)
+}
+
+// Start presentation
 var index = 0
 show(index)
 
