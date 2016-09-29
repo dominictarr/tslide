@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "ansi-escapes": "^1.3.0",
+    "chalk": "^1.1.3",
     "charm": "~0.1.0",
     "color": "~0.4.1",
     "colors": "~0.6.0-1",
@@ -15,6 +16,8 @@
     "insert-queue": "0.0.4",
     "keypress": "~0.1.0",
     "markdown-sections": "~1.0.1",
+    "marked": "^0.3.6",
+    "marked-terminal": "^1.6.2",
     "node-emoji": "^1.3.1",
     "optimist": "~0.3.4"
   },
