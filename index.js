@@ -3,14 +3,17 @@
 require('colors')
 
 var charm = require('charm')(process.stdout)
-var keypress = require('keypress')(process.stdin)
-var opts = require('optimist').default('images', true).argv
+var chalk = require('chalk')
+var emojis = require('node-emoji')
 var fs = require('fs')
-var path = require('path')
+var imgcat = require('ansi-escapes').image
 var iq = require('insert-queue')
 var js = require('hipster/highlight/javascript')
-var imgcat = require('ansi-escapes').image
-var emojis = require('node-emoji')
+var keypress = require('keypress')(process.stdin)
+var marked = require('marked')
+var opts = require('optimist').default('images', true).default('legacy', false).argv
+var path = require('path')
+var TerminalRenderer = require('marked-terminal')
 
 var file = opts._[0]
 if (!file) {
@@ -18,8 +21,23 @@ if (!file) {
   console.error()
   console.error('--highlight      Apply syntax highlighting (default true)')
   console.error('--images         Inline images if supported (default true)')
+  console.error('--legacy         Resets to legacy rendering (default false)')
   process.exit(1)
 }
+
+marked.setOptions({
+  renderer: new TerminalRenderer({
+    heading: function (text) {
+      return chalk.green.bold(text) + '\n';
+    },
+    firstHeading: function (text) {
+      return chalk.magenta.underline.bold(text) + '\n';
+    },
+    highlightOptions: {
+      theme: 'tomorrow-night'
+    }
+  })
+})
 
 var text = require('fs').readFileSync(file, 'utf-8')
 var slides = text.split(/---+\n/)
@@ -123,6 +141,18 @@ function indent(slide, indent) {
   while (indent--)
     space += ' '
 
+  if (opts.legacy)
+    return legacyStyling(slide, space)
+
+  if (highlight)
+    slide = marked(slide);
+
+  return slide.split('\n').map(function (l) {
+    return space + l
+  }).join('\n')
+}
+
+function legacyStyling(slide, space) {
   var code = false
   var inlineBold = /\*\*(.*)\*\*/g
   return slide.split('\n').map(function (l) {

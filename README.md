@@ -24,7 +24,7 @@ you will notice that this [README.md](https://raw.githubusercontent.com/tslide/t
 
 ---
 
-## crude js syntax highlighting
+## Advanced syntax highlighting
 
 ```md
 # tslide
@@ -38,6 +38,15 @@ function fibonacci (n) {
 ‘‘‘
 
 ```
+
+## JavaScript Example
+
+```js
+function fibonacci (n) {
+  return n < 2 ? n : fibonacci(n - 1) + fibonacci(n - 2)
+}
+```
+
 ---
 
 ![Demo Code](demo-code.png)
